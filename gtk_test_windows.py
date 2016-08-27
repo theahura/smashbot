@@ -1,7 +1,6 @@
 import gtk.gdk as gdk
 import time
 
-
 w = gdk.screen_width()
 h = gdk.screen_height()
 
@@ -15,5 +14,3 @@ pb = sg.get_from_drawable(gdk.get_default_root_window(),
                           w, h)
 
 print(time.clock() - start)
-
-
