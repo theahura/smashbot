@@ -12,3 +12,6 @@ DEPS:
     pynput
     numpy
     pillow
+    pywin32
+    pyscreenshot
+    matplotlib
