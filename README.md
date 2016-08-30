@@ -40,21 +40,26 @@ Key output:
     Dolphin will have a preset configuration to allow for the right keys to do 
     the right things.
 
-First priority:
+Goals:
     Screen cap software: find a way to grab screenshots every frame from a 
     specific window, or see if dolphin has a way to do this in app
+
         Done, 8-30-16. GTK on Ubuntu grabs full screenshots quickly.
     
     Keyboard input software: programmatically input keys into a system and have
     it run on dolphin using preset keyboard mappings on dolphin layout.
 
+        50%, evdev for key presses, dolphin still profile
+
+    Get damage classifier running:
+        Create data list (pngs) with csv to map filenames to values.
+        Train TF model on csv data.        
+        Wire up screen cap software to damage classifier.
 
 DEPS:
-    pynput
     numpy
-    pillow
-    pywin32
-    pyscreenshot
+    gtk
+    evdev
     matplotlib
 
 =================================================================================================
