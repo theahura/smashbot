@@ -1,17 +1,21 @@
 """Holds constant variable data across classifier model."""
 
 # File Locations.
-PATH_TO_CSV_MAP = ''
-PATH_TO_MODEL = ''
+PATH_TO_CSV_MAP = './data/map.csv'
+PATH_TO_MODEL = './damage-classifier-model.ckpt'
+PATH_TO_DATA = './data'
 
 # Image Constants.
-WIDTH = 1000
-HEIGHT = 1000
+WIDTH = 660
+HEIGHT = 530
+
+# Data gather.
+NUM_IMAGE_GRAB = 300
 
 # Hyper Parameters. 
 LEARNING_RATE = 0.001
 TRAINING_EPOCHS = 15
-BATCH_SIZE = 100
+BATCH_SIZE = 1
 DISPLAY_STEP = 1
 
 # Network Config Parameters. 

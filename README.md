@@ -1,5 +1,12 @@
 Smash Bot: Neural Network Solution to Super Smash Bros Melee AI
 
+NOTE: BEFORE ALL DOLPHIN SCREENSHOTS RUN
+    
+    wmctrl -r "Dolphin 5.0-Git | JIT64 DC" -e 0,0,0,640,480
+
+TO ENSURE IMAGE IS IN THE RIGHT SPOT AND SIZE
+
+
 Pipeline: 
     [Screen cap software] => 
     [neural net input] =>
@@ -29,6 +36,8 @@ Neural Net:
 
     Damage calculator: trained using preset images to start (supervised).
     Learns to identify damage of a character with preset images (entire screen).
+    Note that only learns damages for a single character at a time; two of these
+    will run simultaneously to learn damage of own char vs opponent.
 
     Inside the neural net, the damage calculator and action calculator are run
     in parallel. The output of the damage calculator is compared to previous

@@ -10,6 +10,8 @@ import tensorflow as tf
 # Load data.
 data = im_h.Data(cc.PATH_TO_CSV_MAP)
 
+print "Data Loaded"
+
 # Graph input.
 images = tf.placeholder('float', [None, cc.IMAGE_SIZE])
 labels = tf.placeholder('float', [None, cc.MAX_DAMAGE])
@@ -19,8 +21,8 @@ def multilayer_perceptron(images, weights, biases):
 
     Args:
         images: [image num, image_size] of png pixel data
-        weights: {} with w1, w2, out, rep weights between layers
-        biases: {} with b1, b2, out, rep biases between layers
+        weights: {} with w1, w2, wout, rep weights between layers
+        biases: {} with b1, b2, bout, rep biases between layers
     """
     # Each hidden layer is a relu activation neuron with wx + b synapse.
     layer_1 = tf.add(tf.matmul(images, weights['w1']), biases['b1'])
@@ -29,22 +31,22 @@ def multilayer_perceptron(images, weights, biases):
     layer_2 = tf.nn.relu(layer_2)
 
     # Output layer is linear.
-    out = tf.matmul(layer_2, weights['out']) + biases['out']
+    out = tf.matmul(layer_2, weights['wout']) + biases['bout']
     return out
 
 # Store layers weight & bias.
 weights = {
     'w1': tf.Variable(tf.random_normal([cc.IMAGE_SIZE, cc.N_HIDDEN_1])),
     'w2': tf.Variable(tf.random_normal([cc.N_HIDDEN_1, cc.N_HIDDEN_2])),
-    'out': tf.Variable(tf.random_normal([cc.N_HIDDEN_2, cc.MAX_DAMAGE]))
+    'wout': tf.Variable(tf.random_normal([cc.N_HIDDEN_2, cc.MAX_DAMAGE]))
 }
 biases = {
     'b1': tf.Variable(tf.random_normal([cc.N_HIDDEN_1])),
     'b2': tf.Variable(tf.random_normal([cc.N_HIDDEN_2])),
-    'out': tf.Variable(tf.random_normal([cc.MAX_DAMAGE]))
+    'bout': tf.Variable(tf.random_normal([cc.MAX_DAMAGE]))
 }
 
-saver = tf.train.Saver({'weights': weights, 'biases': biases})
+saver = tf.train.Saver(dict(weights.items() + biases.items()))
 
 model = multilayer_perceptron(images, weights, biases)
 # Use adam optimizer because >>> than gradient descent, converges faster.
@@ -52,6 +54,8 @@ cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(model, labels))
 opt = tf.train.AdamOptimizer(learning_rate=cc.LEARNING_RATE).minimize(cost)
 
 init = tf.initialize_all_variables()
+
+print "Starting sess"
 
 with tf.Session() as sess:
     sess.run(init)
@@ -62,6 +66,8 @@ with tf.Session() as sess:
 
         for _ in xrange(total_batch):
             batch_images, batch_labels = data.get_next_batch(cc.BATCH_SIZE)
+            print batch_images
+            print batch_labels
             _, c = sess.run([opt, cost], feed_dict={images: batch_images,
                                                     labels: batch_labels})
 

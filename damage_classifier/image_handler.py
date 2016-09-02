@@ -4,13 +4,14 @@ import csv
 
 import gtk.gdk
 import numpy as np
+import pandas as pd
 
 
 class Data():
 
     def __init__(self, path):
         self.current_index = 0
-        self.data = load_images_from_csv(path)
+        self.data = self.load_images_from_csv(path)
 
     def _load_image(self, path):
         """Converts a png image to a pixel array.
@@ -31,24 +32,26 @@ class Data():
         Returns:
             {filename : label}
         """
-        csv_dict = {}
-        with open(path, 'r') as csv_file:
-            reader = csv.DictReader(csv_file)
-            for row in reader:
-                csv_dict['%s%s.png' % (row['base'],
-                                       row['name'])] = int(row['label'])
-
-        return csv_dict
+        csv_df = pd.read_csv(path)
+        d = {'filepath': csv_df['base'] + csv_df['name'].map(str) + '.png',
+             'label': csv_df['label']}
+        return pd.DataFrame(d)
 
     def get_next_batch(self, size):
         """Returns the next batch of size of image, label pairs.
+        
+        Loops around if needed.
 
         Args:
             size: int, size of next batch
         """
         prev_index = self.current_index
         self.current_index += size
-        return self.data[prev_index:self.current_index]
+        if self.current_index >= len(self.data):
+            self.current_index -= len(self.data)
+            return self.data[prev_index:] + self.data[:self.current_index]
+        else:
+            return self.data[prev_index:self.current_index]
 
     def load_images_from_csv(self, path):
         """Loads all images and labels from csv map.
@@ -58,10 +61,15 @@ class Data():
         Returns:
             [([pixel array], label)]
         """
-        csv_dict = self._load_csv(path)
 
-        data = []
-        for path, label in csv_dict.iteritems():
-            data.append((self._load_image(path), label))
+        print "Opening CSV from %s" % path
+        csv_df = self._load_csv(path)
 
-        return data
+        d = {'data': csv_df['filepath'].map(self._load_image),
+             'label': csv_df['label']}
+
+        data_df = pd.DataFrame(d)
+
+        print "Data size: %d" % len(data_df)
+
+        return data_df

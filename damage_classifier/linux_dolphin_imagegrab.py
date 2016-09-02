@@ -13,11 +13,11 @@ import classifier_constants as cc
 
 WIN = gtk.gdk.get_default_root_window()
 
-pb = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, W, H)
+pb = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, cc.WIDTH, cc.HEIGHT)
 
-for i in xrange(1):
+for i in xrange(cc.NUM_IMAGE_GRAB):
     pb = pb.get_from_drawable(WIN, WIN.get_colormap(), 0, 0, 0, 0,
             cc.WIDTH, cc.HEIGHT)
-    pb.save("%s.png" % str(i), "png")
+    pb.save("%s/%s.png" % (cc.PATH_TO_DATA, str(i)), "png")
 
     time.sleep(1)
