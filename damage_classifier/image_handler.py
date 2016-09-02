@@ -2,6 +2,7 @@
 
 import csv
 
+import classifier_constants as cc
 import gtk.gdk
 import numpy as np
 import pandas as pd
@@ -37,6 +38,16 @@ class Data():
              'label': csv_df['label']}
         return pd.DataFrame(d)
 
+    def _load_onehot(self, index):
+        """Returns a one hot numpy array encoded from index.
+        
+        Args:
+            index: which num to make one hot
+        """
+        onehot = np.zeros(cc.MAX_DAMAGE, dtype=np.int)
+        onehot.itemset(index, 1)
+        return onehot
+
     def get_next_batch(self, size):
         """Returns the next batch of size of image, label pairs.
         
@@ -49,9 +60,10 @@ class Data():
         self.current_index += size
         if self.current_index >= len(self.data):
             self.current_index -= len(self.data)
-            return self.data[prev_index:] + self.data[:self.current_index]
+            return pd.concat([self.data.iloc[prev_index:],
+                              self.data.iloc[:self.current_index]])
         else:
-            return self.data[prev_index:self.current_index]
+            return self.data.iloc[prev_index:self.current_index]
 
     def load_images_from_csv(self, path):
         """Loads all images and labels from csv map.
@@ -66,7 +78,7 @@ class Data():
         csv_df = self._load_csv(path)
 
         d = {'data': csv_df['filepath'].map(self._load_image),
-             'label': csv_df['label']}
+             'label': csv_df['label'].map(self._load_onehot)}
 
         data_df = pd.DataFrame(d)
 

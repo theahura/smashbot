@@ -65,15 +65,15 @@ with tf.Session() as sess:
         total_batch = int(cc.NUM_EXAMPLES/cc.BATCH_SIZE)
 
         for _ in xrange(total_batch):
-            batch_images, batch_labels = data.get_next_batch(cc.BATCH_SIZE)
-            print batch_images
-            print batch_labels
+            data_df = data.get_next_batch(cc.BATCH_SIZE)
+            batch_images = data_df['data'].tolist()
+            batch_labels = data_df['label'].tolist()
             _, c = sess.run([opt, cost], feed_dict={images: batch_images,
                                                     labels: batch_labels})
 
             avg_cost += c/total_batch
 
-        if epoch % display_step == 0:
+        if epoch % cc.DISPLAY_STEP == 0:
             print('Epoch:', '%04d' % (epoch+1), 'cost=', \
                   '{:.9f}'.format(avg_cost))
 

@@ -19,8 +19,8 @@ BATCH_SIZE = 1
 DISPLAY_STEP = 1
 
 # Network Config Parameters. 
-IMAGE_SIZE = WIDTH * HEIGHT
-NUM_EXAMPLES = 500  # Number of images.
+IMAGE_SIZE = WIDTH * HEIGHT * 3 # RGB.
+NUM_EXAMPLES = 2  # Number of images.
 MAX_DAMAGE = 999  # Used as number of classes.
 N_HIDDEN_1 = 256
 N_HIDDEN_2 = 256
