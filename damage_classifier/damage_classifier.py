@@ -7,6 +7,8 @@ import classifier_constants as cc
 import image_handler as im_h
 import tensorflow as tf
 
+import time
+
 # Load data.
 data = im_h.Data(cc.PATH_TO_CSV_MAP)
 
@@ -27,22 +29,18 @@ def multilayer_perceptron(images, weights, biases):
     # Each hidden layer is a relu activation neuron with wx + b synapse.
     layer_1 = tf.add(tf.matmul(images, weights['w1']), biases['b1'])
     layer_1 = tf.nn.relu(layer_1)
-    layer_2 = tf.add(tf.matmul(layer_1, weights['w2']), biases['b2'])
-    layer_2 = tf.nn.relu(layer_2)
 
     # Output layer is linear.
-    out = tf.matmul(layer_2, weights['wout']) + biases['bout']
+    out = tf.matmul(layer_1, weights['wout']) + biases['bout']
     return out
 
 # Store layers weight & bias.
 weights = {
     'w1': tf.Variable(tf.random_normal([cc.IMAGE_SIZE, cc.N_HIDDEN_1])),
-    'w2': tf.Variable(tf.random_normal([cc.N_HIDDEN_1, cc.N_HIDDEN_2])),
     'wout': tf.Variable(tf.random_normal([cc.N_HIDDEN_2, cc.MAX_DAMAGE]))
 }
 biases = {
     'b1': tf.Variable(tf.random_normal([cc.N_HIDDEN_1])),
-    'b2': tf.Variable(tf.random_normal([cc.N_HIDDEN_2])),
     'bout': tf.Variable(tf.random_normal([cc.MAX_DAMAGE]))
 }
 
@@ -66,8 +64,10 @@ with tf.Session() as sess:
 
         for _ in xrange(total_batch):
             data_df = data.get_next_batch(cc.BATCH_SIZE)
+
             batch_images = data_df['data'].tolist()
             batch_labels = data_df['label'].tolist()
+
             _, c = sess.run([opt, cost], feed_dict={images: batch_images,
                                                     labels: batch_labels})
 
@@ -78,3 +78,13 @@ with tf.Session() as sess:
                   '{:.9f}'.format(avg_cost))
 
     saver.save(sess, cc.PATH_TO_MODEL)
+
+    # Testing.
+    correct_prediction = tf.equal(tf.argmax(model, 1), tf.argmax(labels, 1))
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
+    data_df = data.get_next_batch(cc.BATCH_SIZE)
+    batch_images = data_df['data'].tolist()
+    batch_labels = data_df['label'].tolist()
+    print("Accuracy:", accuracy.eval({images: batch_images,
+                                      labels: batch_labels}))
+
