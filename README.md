@@ -62,7 +62,13 @@ Goals:
 
     Get damage classifier running:
         Create data list (pngs) with csv to map filenames to values.
+		Docs in place, labels started
         Train TF model on csv data.        
+		Add in stock tracking
+		
+		Switch from 0-999 to 3 [1-10] arrays (or find way for every
+		datapt to be repped)	
+	
         Wire up screen cap software to damage classifier.
 
 DEPS:

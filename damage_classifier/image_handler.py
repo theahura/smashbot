@@ -23,7 +23,7 @@ class Data():
             np pixel array
         """
         pb = gtk.gdk.pixbuf_new_from_file(path)
-        return np.fromstring(pb.get_pixels(), dtype=np.uint8)
+        return np.fromstring(pb.get_pixels(), dtype=np.uint8)[:cc.IMAGE_SIZE]
 
     def _load_csv(self, path):
         """Loads the csv map of images and labels.
@@ -35,7 +35,7 @@ class Data():
         """
         csv_df = pd.read_csv(path)
         d = {'filepath': csv_df['base'] + csv_df['name'].map(str) + '.png',
-             'label': csv_df['label']}
+             'label': csv_df['damage1']}
         return pd.DataFrame(d)
 
     def _load_onehot(self, index):

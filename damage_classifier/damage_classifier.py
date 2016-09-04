@@ -13,7 +13,6 @@ import time
 data = im_h.Data(cc.PATH_TO_CSV_MAP)
 
 print "Data Loaded"
-
 # Graph input.
 images = tf.placeholder('float', [None, cc.IMAGE_SIZE])
 labels = tf.placeholder('float', [None, cc.MAX_DAMAGE])
@@ -30,17 +29,22 @@ def multilayer_perceptron(images, weights, biases):
     layer_1 = tf.add(tf.matmul(images, weights['w1']), biases['b1'])
     layer_1 = tf.nn.relu(layer_1)
 
+    layer_2 = tf.add(tf.matmul(layer_1, weights['w2']), biases['b2'])
+    layer_2 = tf.nn.relu(layer_2)
+
     # Output layer is linear.
-    out = tf.matmul(layer_1, weights['wout']) + biases['bout']
+    out = tf.matmul(layer_2, weights['wout']) + biases['bout']
     return out
 
 # Store layers weight & bias.
 weights = {
     'w1': tf.Variable(tf.random_normal([cc.IMAGE_SIZE, cc.N_HIDDEN_1])),
+    'w2': tf.Variable(tf.random_normal([cc.N_HIDDEN_1, cc.N_HIDDEN_2])),
     'wout': tf.Variable(tf.random_normal([cc.N_HIDDEN_2, cc.MAX_DAMAGE]))
 }
 biases = {
     'b1': tf.Variable(tf.random_normal([cc.N_HIDDEN_1])),
+    'b2': tf.Variable(tf.random_normal([cc.N_HIDDEN_2])),
     'bout': tf.Variable(tf.random_normal([cc.MAX_DAMAGE]))
 }
 
@@ -62,6 +66,7 @@ with tf.Session() as sess:
         avg_cost = 0
         total_batch = int(cc.NUM_EXAMPLES/cc.BATCH_SIZE)
 
+        start = time.clock()
         for _ in xrange(total_batch):
             data_df = data.get_next_batch(cc.BATCH_SIZE)
 
@@ -70,8 +75,9 @@ with tf.Session() as sess:
 
             _, c = sess.run([opt, cost], feed_dict={images: batch_images,
                                                     labels: batch_labels})
-
             avg_cost += c/total_batch
+
+        print time.clock() - start
 
         if epoch % cc.DISPLAY_STEP == 0:
             print('Epoch:', '%04d' % (epoch+1), 'cost=', \
@@ -81,10 +87,14 @@ with tf.Session() as sess:
 
     # Testing.
     correct_prediction = tf.equal(tf.argmax(model, 1), tf.argmax(labels, 1))
+    predictions = tf.argmax(model, 1)
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
     data_df = data.get_next_batch(cc.BATCH_SIZE)
     batch_images = data_df['data'].tolist()
     batch_labels = data_df['label'].tolist()
+    start = time.clock()
+    print predictions.eval(feed_dict={images: batch_images, 
+                                      labels: batch_labels})
+    print time.clock() - start
     print("Accuracy:", accuracy.eval({images: batch_images,
                                       labels: batch_labels}))
-

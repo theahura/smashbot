@@ -7,20 +7,21 @@ PATH_TO_DATA = './data'
 
 # Image Constants.
 WIDTH = 660
-HEIGHT = 530
+HEIGHT = 109
+RGB = 3
 
 # Data gather.
 NUM_IMAGE_GRAB = 300
 
 # Hyper Parameters. 
-LEARNING_RATE = 0.001
-TRAINING_EPOCHS = 15
-BATCH_SIZE = 1
-DISPLAY_STEP = 1
+LEARNING_RATE = 0.0001
+TRAINING_EPOCHS = 1000
+BATCH_SIZE = 58
+DISPLAY_STEP = 10
 
 # Network Config Parameters. 
-IMAGE_SIZE = WIDTH * HEIGHT * 3 # RGB.
-NUM_EXAMPLES = 2  # Number of images.
+IMAGE_SIZE = WIDTH * HEIGHT * RGB
+NUM_EXAMPLES = 58  # Number of images.
 MAX_DAMAGE = 999  # Used as number of classes.
-N_HIDDEN_1 = 256
-N_HIDDEN_2 = 256
+N_HIDDEN_1 = 109
+N_HIDDEN_2 = 660
