@@ -1,8 +1,8 @@
 Sept 9
     
-   Tyler: get this shit running
+   Tyler: get this shit running + MNIST tutorial
 
-   Adrian: collecting and labeling data
+   Adrian: get this running, collecting and labeling data
         Do 0-999 damage im cap on final destination
                                on fountain of dreams
 
