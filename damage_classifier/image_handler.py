@@ -15,7 +15,7 @@ class Data():
         self.data = self.load_images_from_csv(path)
 
     def _load_image(self, path):
-        """Converts a png image to a pixel array.
+        """Converts a png image to a pixel array, normalizes from 0 to 1.
         
         Args:
             path: str, location of png image
@@ -23,7 +23,8 @@ class Data():
             np pixel array
         """
         pb = gtk.gdk.pixbuf_new_from_file(path)
-        return np.fromstring(pb.get_pixels(), dtype=np.uint8)[:cc.IMAGE_SIZE]
+        pix = np.fromstring(pb.get_pixels(), dtype=np.uint8)[:cc.IMAGE_SIZE]
+        return pix/cc.MAX_PIX_VAL
 
     def _load_csv(self, path):
         """Loads the csv map of images and labels.

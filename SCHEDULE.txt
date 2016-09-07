@@ -12,9 +12,9 @@ Sept 9
 
 Sept 16
 
-    Tyler: Trian damage classifier net
+    Tyler: Trian damage classifier net (including stocks, opponents)
 
-    Adrian: Optimize image capture on damage classifier
+    Adrian: Optimize image capture, processing on damage classifier
 
     Amol: Start coding neuralnet for actions
 

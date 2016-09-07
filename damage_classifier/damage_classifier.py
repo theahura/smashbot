@@ -15,7 +15,7 @@ data = im_h.Data(cc.PATH_TO_CSV_MAP)
 print "Data Loaded"
 # Graph input.
 images = tf.placeholder('float', [None, cc.IMAGE_SIZE])
-labels = tf.placeholder('float', [None, cc.MAX_DAMAGE])
+labels = tf.placeholder('float', [None, cc.NUM_OUTPUT_NEURONS])
 
 def multilayer_perceptron(images, weights, biases):
     """Creates the TF model.
@@ -52,7 +52,7 @@ saver = tf.train.Saver(dict(weights.items() + biases.items()))
 
 model = multilayer_perceptron(images, weights, biases)
 # Use adam optimizer because >>> than gradient descent, converges faster.
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(model, labels))
+cost = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(model, labels))
 opt = tf.train.AdamOptimizer(learning_rate=cc.LEARNING_RATE).minimize(cost)
 
 init = tf.initialize_all_variables()
