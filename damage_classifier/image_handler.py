@@ -7,6 +7,8 @@ import gtk.gdk
 import numpy as np
 import pandas as pd
 
+#debugging
+from matplotlib import pyplot as plt
 
 class Data():
 
@@ -16,19 +18,25 @@ class Data():
 
     def _load_image(self, path):
         """Converts a png image to a pixel array, normalizes from 0 to 1.
-        
+
         Args:
             path: str, location of png image
         Returns:
             np pixel array
         """
         pb = gtk.gdk.pixbuf_new_from_file(path)
-        pix = np.fromstring(pb.get_pixels(), dtype=np.uint8)[:cc.IMAGE_SIZE]
+        pix = np.fromstring(pb.get_pixels(), dtype=np.uint8)[-1*cc.IMAGE_SIZE:]
+        
+        # Debugging
+        # pix = pix.reshape(cc.HEIGHT, cc.WIDTH, 3)
+        # plt.imshow(pix, interpolation='nearest')
+        # plt.show()
+
         return pix/cc.MAX_PIX_VAL
 
     def _load_csv(self, path):
         """Loads the csv map of images and labels.
-        
+
         Args:
             path: str, location of the csv map.
         Returns:
@@ -41,7 +49,7 @@ class Data():
 
     def _load_onehot(self, index):
         """Returns a one hot numpy array encoded from index.
-        
+
         Args:
             index: which num to make one hot
         """
@@ -51,7 +59,7 @@ class Data():
 
     def get_next_batch(self, size):
         """Returns the next batch of size of image, label pairs.
-        
+
         Loops around if needed.
 
         Args:

@@ -36,65 +36,73 @@ def multilayer_perceptron(images, weights, biases):
     out = tf.matmul(layer_2, weights['wout']) + biases['bout']
     return out
 
-# Store layers weight & bias.
-weights = {
-    'w1': tf.Variable(tf.random_normal([cc.IMAGE_SIZE, cc.N_HIDDEN_1])),
-    'w2': tf.Variable(tf.random_normal([cc.N_HIDDEN_1, cc.N_HIDDEN_2])),
-    'wout': tf.Variable(tf.random_normal([cc.N_HIDDEN_2, cc.MAX_DAMAGE]))
-}
-biases = {
-    'b1': tf.Variable(tf.random_normal([cc.N_HIDDEN_1])),
-    'b2': tf.Variable(tf.random_normal([cc.N_HIDDEN_2])),
-    'bout': tf.Variable(tf.random_normal([cc.MAX_DAMAGE]))
-}
+def main():
+    # Store layers weight & bias.
+    weights = {
+        'w1': tf.Variable(tf.random_normal([cc.IMAGE_SIZE, cc.N_HIDDEN_1])),
+        'w2': tf.Variable(tf.random_normal([cc.N_HIDDEN_1, cc.N_HIDDEN_2])),
+        'wout': tf.Variable(tf.random_normal([cc.N_HIDDEN_2, cc.MAX_DAMAGE]))
+    }
+    biases = {
+        'b1': tf.Variable(tf.random_normal([cc.N_HIDDEN_1])),
+        'b2': tf.Variable(tf.random_normal([cc.N_HIDDEN_2])),
+        'bout': tf.Variable(tf.random_normal([cc.MAX_DAMAGE]))
+    }
 
-saver = tf.train.Saver(dict(weights.items() + biases.items()))
+    saver = tf.train.Saver(dict(weights.items() + biases.items()))
 
-model = multilayer_perceptron(images, weights, biases)
-# Use adam optimizer because >>> than gradient descent, converges faster.
-cost = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(model, labels))
-opt = tf.train.AdamOptimizer(learning_rate=cc.LEARNING_RATE).minimize(cost)
+    model = multilayer_perceptron(images, weights, biases)
+    # Use adam optimizer because >>> than gradient descent, converges faster.
+    cost = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(model, labels))
+    opt = tf.train.AdamOptimizer(learning_rate=cc.LEARNING_RATE).minimize(cost)
 
-init = tf.initialize_all_variables()
+    print "Starting sess"
 
-print "Starting sess"
+    with tf.Session() as sess:
+        sess.run(tf.initialize_all_variables())
 
-with tf.Session() as sess:
-    sess.run(init)
+        #reload old model if it previously exists
+        ckpt = tf.train.get_checkpoint_state(cc.PATH_TO_MODEL)
+        if ckpt and ckpt.model_checkpoint_path:
+            print "Loaded old model"
+            saver.restore(sess, ckpt.model_checkpoint_path)
 
-    for epoch in range(cc.TRAINING_EPOCHS):
-        avg_cost = 0
-        total_batch = int(cc.NUM_EXAMPLES/cc.BATCH_SIZE)
+        for epoch in range(cc.TRAINING_EPOCHS):
+            avg_cost = 0
+            total_batch = int(cc.NUM_EXAMPLES/cc.BATCH_SIZE)
 
+            start = time.clock()
+            for _ in xrange(total_batch):
+                data_df = data.get_next_batch(cc.BATCH_SIZE)
+
+                batch_images = data_df['data'].tolist()
+                batch_labels = data_df['label'].tolist()
+
+                _, c = sess.run([opt, cost], feed_dict={images: batch_images,
+                                                        labels: batch_labels})
+                avg_cost += c/total_batch
+
+            print time.clock() - start
+
+            if epoch % cc.DISPLAY_STEP == 0:
+                print('Epoch:', '%04d' % (epoch+1), 'cost=', \
+                      '{:.9f}'.format(avg_cost))
+
+        saver.save(sess, cc.PATH_TO_MODEL + cc.MODEL_NAME)
+
+        # Testing. Currently tests on self, but damage classifier should have
+        # 100% accuracy because important neurons shouldn't change.
+        correct_prediction = tf.equal(tf.argmax(model, 1), tf.argmax(labels, 1))
+        predictions = tf.argmax(model, 1)
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
+        data_df = data.get_next_batch(cc.BATCH_SIZE)
+        batch_images = data_df['data'].tolist()
+        batch_labels = data_df['label'].tolist()
         start = time.clock()
-        for _ in xrange(total_batch):
-            data_df = data.get_next_batch(cc.BATCH_SIZE)
-
-            batch_images = data_df['data'].tolist()
-            batch_labels = data_df['label'].tolist()
-
-            _, c = sess.run([opt, cost], feed_dict={images: batch_images,
-                                                    labels: batch_labels})
-            avg_cost += c/total_batch
-
+        print predictions.eval(feed_dict={images: batch_images,
+                                          labels: batch_labels})
         print time.clock() - start
+        print("Accuracy:", accuracy.eval({images: batch_images,
+                                          labels: batch_labels}))
 
-        if epoch % cc.DISPLAY_STEP == 0:
-            print('Epoch:', '%04d' % (epoch+1), 'cost=', \
-                  '{:.9f}'.format(avg_cost))
-
-    saver.save(sess, cc.PATH_TO_MODEL)
-
-    # Testing.
-    correct_prediction = tf.equal(tf.argmax(model, 1), tf.argmax(labels, 1))
-    predictions = tf.argmax(model, 1)
-    accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
-    data_df = data.get_next_batch(cc.BATCH_SIZE)
-    batch_images = data_df['data'].tolist()
-    batch_labels = data_df['label'].tolist()
-    start = time.clock()
-    print predictions.eval(feed_dict={images: batch_images, 
-                                      labels: batch_labels})
-    print time.clock() - start
-    print("Accuracy:", accuracy.eval({images: batch_images,
-                                      labels: batch_labels}))
+main()

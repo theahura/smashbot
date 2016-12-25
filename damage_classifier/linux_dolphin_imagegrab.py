@@ -25,4 +25,4 @@ for i in xrange(cc.NUM_IMAGE_GRAB):
 
     print "captured image: %s" % str(i + START_NAME)
 
-    time.sleep(0.3)
+    time.sleep(cc.SECPERFRAME)
