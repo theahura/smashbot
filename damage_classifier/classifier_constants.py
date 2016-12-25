@@ -3,7 +3,7 @@
 # File Locations.
 PATH_TO_CSV_MAP = './data/map.csv'
 PATH_TO_MODEL = './'
-MODEL_NAME = 'damage-classifier-model.ckpt'
+MODEL_NAME = 'model.ckpt'
 PATH_TO_DATA = './data'
 
 # Image Constants (cropped).

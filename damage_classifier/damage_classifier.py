@@ -6,6 +6,7 @@ Functions as main for training. Stores the model for future testing.
 import classifier_constants as cc
 import image_handler as im_h
 import tensorflow as tf
+import numpy as np
 
 import time
 
@@ -90,8 +91,8 @@ def main():
 
         saver.save(sess, cc.PATH_TO_MODEL + cc.MODEL_NAME)
 
-        # Testing. Currently tests on self, but damage classifier should have
-        # 100% accuracy because important neurons shouldn't change.
+        # Testing. Currently tests on self, but damage classifier should ideally
+        # have 100% accuracy because important neurons shouldn't change.
         correct_prediction = tf.equal(tf.argmax(model, 1), tf.argmax(labels, 1))
         predictions = tf.argmax(model, 1)
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
@@ -101,6 +102,7 @@ def main():
         start = time.clock()
         print predictions.eval(feed_dict={images: batch_images,
                                           labels: batch_labels})
+        print [np.argmax(x) for x in batch_labels]
         print time.clock() - start
         print("Accuracy:", accuracy.eval({images: batch_images,
                                           labels: batch_labels}))
