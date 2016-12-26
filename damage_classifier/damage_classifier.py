@@ -15,7 +15,7 @@ data = im_h.Data(cc.PATH_TO_CSV_MAP)
 
 print "Data Loaded"
 # Graph input.
-images = tf.placeholder('float', [None, cc.IMAGE_SIZE])
+images = tf.placeholder('float', [None, cc.NUM_INPUT_NEURONS])
 labels = tf.placeholder('float', [None, cc.NUM_OUTPUT_NEURONS])
 
 def multilayer_perceptron(images, weights, biases):
@@ -40,14 +40,16 @@ def multilayer_perceptron(images, weights, biases):
 def main():
     # Store layers weight & bias.
     weights = {
-        'w1': tf.Variable(tf.random_normal([cc.IMAGE_SIZE, cc.N_HIDDEN_1])),
+        'w1': tf.Variable(tf.random_normal([cc.NUM_INPUT_NEURONS,
+                                            cc.N_HIDDEN_1])),
         'w2': tf.Variable(tf.random_normal([cc.N_HIDDEN_1, cc.N_HIDDEN_2])),
-        'wout': tf.Variable(tf.random_normal([cc.N_HIDDEN_2, cc.MAX_DAMAGE]))
+        'wout': tf.Variable(tf.random_normal([cc.N_HIDDEN_2,
+                                              cc.NUM_OUTPUT_NEURONS]))
     }
     biases = {
         'b1': tf.Variable(tf.random_normal([cc.N_HIDDEN_1])),
         'b2': tf.Variable(tf.random_normal([cc.N_HIDDEN_2])),
-        'bout': tf.Variable(tf.random_normal([cc.MAX_DAMAGE]))
+        'bout': tf.Variable(tf.random_normal([cc.NUM_OUTPUT_NEURONS]))
     }
 
     saver = tf.train.Saver(dict(weights.items() + biases.items()))

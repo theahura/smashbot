@@ -33,10 +33,8 @@ Neural Net:
     descending order. Keys within a certain range will be pressed at the same
     time. May also use values of joystick keys to indicate force.
 
-    Damage calculator: trained using preset images to start (supervised).
-    Learns to identify damage of a character with preset images (entire screen).
-    Note that only learns damages for a single character at a time; two of these
-    will run simultaneously to learn damage of own char vs opponent.
+    Loss calculator: program is fed two frames and determines whether one frame
+    has a higher damage than the other.
 
     Inside the neural net, the damage calculator and action calculator are run
     in parallel. The output of the damage calculator is compared to previous
