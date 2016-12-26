@@ -34,7 +34,8 @@ Neural Net:
     time. May also use values of joystick keys to indicate force.
 
     Loss calculator: program is fed two frames and determines whether one frame
-    has a higher damage than the other.
+    has a higher damage than the other. May want to also check if damage done is
+    self is changed at all?
 
     Inside the neural net, the damage calculator and action calculator are run
     in parallel. The output of the damage calculator is compared to previous
