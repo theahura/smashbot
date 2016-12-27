@@ -18,17 +18,18 @@ NUM_IMAGE_GRAB = 10000
 GATHER_WIDTH = WIDTH # 660.
 GATHER_HEIGHT = HEIGHT*5 # 545.
 NUM_FIELDS = 4  # Fields in the data.
-SECPERFRAME = 0.3 # How fast to gather.
+SECPERFRAME = 2 # How fast to gather.
 FULL_IMAGE_SIZE = GATHER_WIDTH * GATHER_HEIGHT * RGB
+START_NAME = 30
 
-# Hyper Parameters. 
+# Hyper Parameters.
 LEARNING_RATE = 0.001
 TRAINING_EPOCHS = 200
-BATCH_SIZE = 50
+BATCH_SIZE = 5000
 DISPLAY_STEP = 10
 
-# Network Config Parameters. 
-NUM_EXAMPLES = 168  # Number of images.
+# Network Config Parameters.
+NUM_EXAMPLES = 31375  # Number of images.
 N_HIDDEN_1 = 109
 N_HIDDEN_2 = 660
 ONEHOT_SIZE = 2

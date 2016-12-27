@@ -27,6 +27,7 @@ class Data():
             np pixel array
         """
         # Get the frame paths.
+        print path
         path_args = path.split('_')
         frame_curr_path = path_args[0] + '/' +  path_args[1] + '.png'
         frame_prev_path = path_args[0] + '/' + path_args[2] + '.png'
